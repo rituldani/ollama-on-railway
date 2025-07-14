@@ -19,13 +19,18 @@
 
 # # Pull the model at container start
 # CMD /bin/sh -c "ollama serve & sleep 5 && ollama pull gemma:2b && tail -f /dev/null"
+
 FROM ubuntu:22.04
 
 # Install dependencies and Ollama
 RUN apt-get update && apt-get install -y curl gnupg && \
     curl -fsSL https://ollama.com/install.sh | sh
 
+# Expose the port Ollama uses
 EXPOSE 11434
 
-# Start Ollama and listen on all interfaces
-CMD ["ollama", "serve", "--host", "0.0.0.0"]
+# Set environment variable to allow external access
+ENV OLLAMA_HOST=0.0.0.0:11434
+
+# Start the Ollama server
+CMD ["ollama", "serve"]
