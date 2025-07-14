@@ -35,9 +35,20 @@
 # # Start the Ollama server
 # CMD ["ollama", "serve"]
 
-FROM ollama/ollama
+# Use Ubuntu as base
+FROM ubuntu:22.04
 
+# Install curl and dependencies
+RUN apt-get update && \
+    apt-get install -y curl gnupg && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Ollama
+RUN curl -fsSL https://ollama.com/install.sh | sh
+
+# Pull model at runtime
+CMD bash -c "ollama serve & sleep 10 && ollama pull gemma:2b && tail -f /dev/null"
+
+# Expose port
 EXPOSE 11434
 
-# Start Ollama and pull model after it's up
-CMD /bin/sh -c "ollama serve & sleep 10 && ollama pull gemma:2b && tail -f /dev/null"
